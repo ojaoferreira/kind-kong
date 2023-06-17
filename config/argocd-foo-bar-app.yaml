@@ -5,10 +5,35 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://github.com/ojaoferreira/kind-kong.git
-    targetRevision: HEAD
-    path: apps/foo-bar
+  sources:
+    - repoURL: https://github.com/ojaoferreira/http-echo
+      targetRevision: HEAD
+      path: chart
+      helm:
+        values: |
+          argsText: bar
+          ingress:
+            enabled: true
+            className: kong
+            hosts:
+              - host: bar.local
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+    - repoURL: https://github.com/ojaoferreira/http-echo
+      targetRevision: HEAD
+      path: chart
+      helm:
+        values: |
+          argsText: foo
+          ingress:
+            enabled: true
+            className: kong
+            hosts:
+              - host: foo.local
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
   destination:
     server: https://kubernetes.default.svc
     namespace: foo-bar
