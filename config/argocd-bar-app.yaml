@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bar
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/ojaoferreira/http-echo
+      targetRevision: HEAD
+      path: chart
+      helm:
+        values: |
+          argsText: bar
+          ingress:
+            enabled: true
+            className: kong
+            hosts:
+              - host: bar.local
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: foo-bar
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      allowEmpty: true
+      selfHeal: true
